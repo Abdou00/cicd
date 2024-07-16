@@ -19,6 +19,23 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg arch=all] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
           sudo apt update
           sudo apt install gh
+      - name: Authentification avec GitHub CLI
+      env:
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      run: |
+        echo $GITHUB_TOKEN | gh auth login --with-token -p https
+    - name: Configurer l'identité Git
+      run: |
+        git config --global user.email "abdoulaye_diarra@outlook.fr"
+        git config --global user.name "Abdou00"
+    - name: Créer une branche temporaire
+      run: |
+        git checkout -b feature/new-feature
+        # Ajoutez des changements ici, par exemple, un nouveau fichier
+        echo "Nouvelle fonctionnalité" > nouvelle_fonctionnalite.txt
+        git add nouvelle_fonctionnalite.txt
+        git commit -m "Ajout d'une nouvelle fonctionnalité"
+        git push origin feature/new-feature
       - name: Création de la pull Request
         run: |
           gh auth login --with-token < ${{ secrets.GITHUB_TOKEN }}
