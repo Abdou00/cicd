@@ -1,13 +1,14 @@
 # Nom du workflow
 name: Mon Workflow
-# Cette section définit les événemennts déclencheurs du workflow
-on:
+
+# Cette section définit les événements déclencheurs du workflow
+on: 
   push:
     branches:
       - main
-# Défini les less jobs à exécuter dans le workflow
+
+# Défini les jobs à exécuter dans le workflow
 jobs:
-  # Nom du job
   create-pull-request:
     runs-on: ubuntu-latest
     steps:
@@ -15,43 +16,37 @@ jobs:
         uses: actions/checkout@v4
       - name: Installation de la CLI Github
         run: |
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
           echo "deb [signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg arch=all] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
           sudo apt update
           sudo apt install gh
       - name: Authentification avec GitHub CLI
-      env:
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      run: |
-        echo $GITHUB_TOKEN | gh auth login --with-token -p https
-    - name: Configurer l'identité Git
-      run: |
-        git config --global user.email "abdoulaye_diarra@outlook.fr"
-        git config --global user.name "Abdou00"
-    - name: Créer une branche temporaire
-      run: |
-        git checkout -b feature/new-feature
-        # Ajoutez des changements ici, par exemple, un nouveau fichier
-        echo "Nouvelle fonctionnalité" > nouvelle_fonctionnalite.txt
-        git add nouvelle_fonctionnalite.txt
-        git commit -m "Ajout d'une nouvelle fonctionnalité"
-        git push origin feature/new-feature
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          echo $GITHUB_TOKEN | gh auth login --with-token -p https
+      - name: Configurer l'identité Git
+        run: |
+          git config --global user.email "your-email@example.com"
+          git config --global user.name "Your Name"
+      - name: Créer une branche temporaire
+        run: |
+          git checkout -b feature/new-feature
+          # Ajoutez des changements ici, par exemple, un nouveau fichier
+          echo "Nouvelle fonctionnalité" > nouvelle_fonctionnalite.txt
+          git add nouvelle_fonctionnalite.txt
+          git commit -m "Ajout d'une nouvelle fonctionnalité"
+          git push origin feature/new-feature
       - name: Création de la pull Request
         run: |
-          gh auth login --with-token < ${{ secrets.GITHUB_TOKEN }}
-          gh pr create --base main --head ${{ github.ref }} --title "Nouvelle fonctionnalité"  --body "Cette pull request ajoute une nouvelle fonctionnalité."
+          gh pr create --base main --head feature/new-feature --title "Nouvelle fonctionnalité" --body "Cette pull request ajoute une nouvelle fonctionnalité."
 
   build:
-    # Cette ligne indique l'environnement sur lequel le job sera exécuter
     runs-on: ubuntu-latest
-    # Cette section définit la suite d'actions ou de commandes à exécuter
     steps:
-      # Nom de l'étape
       - name: Checkout du code
-      # L'action à utiliser. Ici "actions/checkout@v4" est l'action qui clone le code source du projet
         uses: actions/checkout@v4
-      - name: Installation des dépendances
-      # Exécute la commande
+      - name: Installations des dépendances
         run: npm install
       - name: Exécution des tests
         run: npm test
@@ -59,7 +54,10 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: test-result
+          path: ./reports/awesome-reports/
+        env:
+          ACTIONS_STEP_DEBUG: true
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
   deploy:
     needs: build
@@ -71,5 +69,4 @@ jobs:
           name: test-results
       - name: Déploiement sur le serveur de production
         run: |
-          # Script de déploiement
-          echo "Déploiement de l'application sur le serveur."
+          echo "Déploiement de l'application sur le serveur"
