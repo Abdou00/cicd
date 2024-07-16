@@ -16,7 +16,7 @@ jobs:
       - name: Installation de la CLI Github
         run: |
           curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg arch=all] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list
+          echo "deb [signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg arch=all] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
           sudo apt update
           sudo apt install gh
       - name: Création de la pull Request
