@@ -9,38 +9,7 @@ on:
 
 # Défini les jobs à exécuter dans le workflow
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout du code
-        uses: actions/checkout@v4
-      - name: Installations des dépendances
-        run: npm install
-      - name: Exécution des tests
-        run: npm test
-      - name: Archivage des résultats de tests
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-results
-          path: ./reports/awesome-reports/
-        env:
-          ACTIONS_STEP_DEBUG: true
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Téléchargement des résultats de tests
-        uses: actions/download-artifact@v2
-        with:
-          name: test-results
-      - name: Déploiement sur le serveur de production
-        run: |
-          echo "Déploiement de l'application sur le serveur"
-
   create-pull-request:
-    needs: deplpoy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du code
@@ -71,3 +40,33 @@ jobs:
       - name: Création de la pull Request
         run: |
           gh pr create --base main --head feature/new-feature --title "Nouvelle fonctionnalité" --body "Cette pull request ajoute une nouvelle fonctionnalité."
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+      - name: Installations des dépendances
+        run: npm install
+      - name: Exécution des tests
+        run: npm test
+      - name: Archivage des résultats de tests
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: ./reports/awesome-reports/
+        env:
+          ACTIONS_STEP_DEBUG: true
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Téléchargement des résultats de tests
+        uses: actions/download-artifact@v2
+        with:
+          name: test-results
+      - name: Déploiement sur le serveur de production
+        run: |
+          echo "Déploiement de l'application sur le serveur"
