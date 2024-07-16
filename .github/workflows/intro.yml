@@ -10,6 +10,7 @@ on:
 # Défini les jobs à exécuter dans le workflow
 jobs:
   create-pull-request:
+    needs: deplpoy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du code
