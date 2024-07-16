@@ -12,17 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du code
-      uses: actions/checkout@v4
+        uses: actions/checkout@v4
       - name: Installation de la CLI Github
-      run: |
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
           echo "deb [signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg arch=all] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list
-          apt update
-          apt install gh
+          sudo apt update
+          sudo apt install gh
       - name: Création de la pull Request
-      run: |
-        gh auth login --with-token < ${{ secrets.GITHUB_TOKEN }}
-        gh pr create --base main --head ${{ github.ref }} --title "Nouvelle fonctionnalité"  --body "Cette pull request ajoute une nouvelle fonctionnalité."
+        run: |
+          gh auth login --with-token < ${{ secrets.GITHUB_TOKEN }}
+          gh pr create --base main --head ${{ github.ref }} --title "Nouvelle fonctionnalité"  --body "Cette pull request ajoute une nouvelle fonctionnalité."
 
   build:
     # Cette ligne indique l'environnement sur lequel le job sera exécuter
@@ -32,27 +32,27 @@ jobs:
       # Nom de l'étape
       - name: Checkout du code
       # L'action à utiliser. Ici "actions/checkout@v4" est l'action qui clone le code source du projet
-      uses: actions/checkout@v4
+        uses: actions/checkout@v4
       - name: Installation des dépendances
       # Exécute la commande
-      run: npm install
+        run: npm install
       - name: Exécution des tests
-      run: npm test
+        run: npm test
       - name: Archivage des résultats de tests
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-results
-        path: test-result
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: test-result
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Téléchargement des résultats de tests
-      uses: actions/download-artifact@v2
-      with:
-       name: test-results
+        uses: actions/download-artifact@v2
+        with:
+          name: test-results
       - name: Déploiement sur le serveur de production
-      run: |
-        # Script de déploiement
-        echo "Déploiement de l'application sur le serveur."
+        run: |
+          # Script de déploiement
+          echo "Déploiement de l'application sur le serveur."
